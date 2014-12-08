@@ -3,9 +3,5 @@ export PYTHONPATH=/home/stine/.local/UCSF-Chimera64-1.10/lib/python2.7/site-pack
 export TCL_LIBRARY=/home/stine/.local/UCSF-Chimera64-1.10/lib/tcl8.6/
 python -m pudb.run /home/stine/.local/UCSF-Chimera64-1.10/share/__main__.py --
 
-
-# Run the gui tool directly (not useful because it just opens the dialog to choose a model. It does not trigger the script directly)
-python -m pudb.run /home/stine/.local/UCSF-Chimera64-1.10/share/__main__.py --start "Create/View structural Alignment" --nogui --debug
-
 # Run a startup script
 python -m pudb.run /home/stine/.local/UCSF-Chimera64-1.10/share/__main__.py --nogui --debug --script /path/to/startupScript.py /path/to/pdb/file/1BIK.pdb
