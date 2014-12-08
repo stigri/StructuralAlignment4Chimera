@@ -2,7 +2,7 @@ Activate plugin
 ===============
 Simply symlink this directory into Chimera's share/ directly:
 
-	ln -s /path/to/Chimera/share /path/to/this/repository
+	ln -s /path/to/this/repository /path/to/Chimera/share
 
 Debug Chimera
 =============
