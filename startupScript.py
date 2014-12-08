@@ -1,7 +1,7 @@
 import chimera
 
 # Store all currently open models in the variable called "models"
-models = chimera.openModels.list(modelTypes = [chimera.Molecule])
+models = chimera.openModels.list()
 
 # Loop over all atoms of all open models and print the atom's coordinates
 for p in models:
