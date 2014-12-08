@@ -1,3 +1,9 @@
+Activate plugin
+===============
+Simply symlink this directory into Chimera's share/ directly:
+
+	ln -s /path/to/Chimera/share /path/to/this/repository
+
 Debug Chimera
 =============
 	```bash
@@ -12,6 +18,7 @@ Debug Chimera
 
 Random Notes
 ============
+* Python's print outs triggered in Chimera go to Tools > Reply Log
 * Chimera's C++ Atom.h is in  include/_molecule/Atom.h
 * [Getting started with Chimera and Python](https://www.student.cs.uwaterloo.ca/~cs483/Getting_Started_with_Chimera_and_Python_H.pdf)
 * ["getcrd" command lists an atoms coordinates](http://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/getcrd.html)
