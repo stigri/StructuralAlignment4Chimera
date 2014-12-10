@@ -1,4 +1,5 @@
 import chimera
+import wurstl
 
 # Store all currently open models in the variable called "models"
 models = chimera.openModels.list()
@@ -14,3 +15,4 @@ for p in models:
 	print "Residue:",  a.residue.type, a.residue.id
 	print "--------"
 
+print wurstl.structural_alignment("Hi, this is Chimera calling C ...")

@@ -42,7 +42,8 @@ CFILES = align.c\
          scratch.c\
          sec_s.c\
          str.c\
-         vec.c
+         vec.c\
+         pwrapper.c
          
 OFILES = $(CFILES:.c=.o)      
 
@@ -69,10 +70,10 @@ $(OUTLIBSTAT):$(OFILES)
 	@echo OK
 	
 #CFLAGSS  = -I $(INC) -Dinline= -DHIDE_INLINE_STATIC -fPIC -g
-CFLAGSS  = -I$(INC) -Dinline=  -fPIC -g
-LDFLAGSS =  -l$(GSLLIB) -L$(GSL) -lm
-CFLAGSD  = -I$(INC) -Dinline=  -fPIC -g
-LDFLAGSD =  -shared -l$(GSLLIB) -L$(GSL) -lm
+CFLAGSS  = -I$(INC) -I/usr/include/python2.7 -Dinline=  -fPIC -g
+LDFLAGSS =  -l$(GSLLIB) -L$(GSL) -l/usr/include/python2.7 -lm
+CFLAGSD  = -I$(INC) -I/usr/include/python2.7 -Dinline=  -fPIC -g
+LDFLAGSD =  -shared -l$(GSLLIB) -L$(GSL) -L/usr/include/python2.7 -lpython2.7 -lm
 
 
 clean:
