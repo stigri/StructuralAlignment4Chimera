@@ -3,7 +3,7 @@
 
 
 # These flags will be passed down to the subdirectories
-CDEBUG = -O2
+CDEBUG = -O2 -g3
 # gcc
 #CWARN  = -ansi -pedantic -Wall
 CWARN  =  -pedantic -Wall
