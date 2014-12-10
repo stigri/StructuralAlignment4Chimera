@@ -3,6 +3,8 @@ Activate plugin
 Simply symlink this directory into Chimera's share/ directly:
 
 	ln -s /path/to/this/repository /path/to/Chimera/share
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/this/repository/wurstl/gsl_lib
+	/path/to/Chimera/bin/chimera
 
 Debug Chimera
 =============
