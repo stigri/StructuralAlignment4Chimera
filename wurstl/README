@@ -1,0 +1,53 @@
+to build libraries and tools in static mode, type 
+
+   make
+   
+the same in dynamic mode, type 
+  
+   make MODE=dynam
+   
+   
+   please check if struct_pwa can finde all it needs: 
+      ldd /tools/struct_pwa
+      
+   if you get something like that 
+      ...
+      libwurstl.so => not found
+      libgslw.so.1 => not found
+      ...
+      
+      try 
+      -> Add the unresolved library path in /etc/ld.so.conf.d/name-of-lib-x86_64.conf and/or /etc/ld.so.conf.d/name-of-lib-i686.conf
+      Reload the library cache (/etc/ld.so.cache) with the command: sudo ldconfig
+      or
+      -> Add the library path to the environment variable to fix runtime dependency:
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:path/to/wurstl/lib:path/to/wurstl/gsl_lib
+   
+if there is no errors, you can find an executable struct_pwa (structure based pairwise alignment ) in the directory tools to test the library.
+
+
+to start a test you can tipe something like this:
+
+   cd tools
+   ./struct_pwa ../examples/pdb1jjo_1.ent ../examples/pdb1kct.ent ../examples/classfile ../examples/out.pdb -a 0 -r 10.0
+   
+   general start string is
+
+   ./struct_pwa <pdb1>  <pdb2>  <classFile>  <pdbout>  -a <alg type> -r <rmsd_threshold>
+   
+Description of input parameters:
+
+   essential fields
+   <pdb1> <pdb2> these coordinates will be aligned and superimpossed.
+   <classFile> this is an internal file, will be deleted soon
+   <pdbout> an output-pdb-file contains new coordinates of <pdb1> (superimposed with <pdb2>)
+   
+   optional fields
+   <alg type> 0 - Nedelman-Wunsch Algorith (global Alignment) (default)
+              1 - Smith-Watherman Alg (lockal Alignment)
+   <rmsd_threshold> defines how close/good the two proteins should be superimposed. (default 10.0)
+
+
+for more help tipe 
+
+   man ./wurstl.1

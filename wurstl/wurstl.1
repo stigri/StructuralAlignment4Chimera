@@ -1,0 +1,176 @@
+.TH wurstl 1
+
+.SH NAME
+\fBwurstl\fR \- library to align and superimpose protein coordinate files
+
+\fBstruct_pwa\fR \- tool to align and superimpose two protein coordinate files
+
+.SH SYNOPSIS
+.LP
+.nf
+\fBstruct_pwa\fR \fIpdb1\fR \fIpdb2\fR \fIclassfile\fR \fIpdbout\fR \fIalg_type(optional)\fR \fIrms_threshold(optional)\fR
+.fi
+
+.SH DESCRIPTION
+.LP
+\fBstruct_pwa\fR takes two protein coordinate files, calculates a
+structure-based alignment and uses this to superimpose the first set
+of coordinates on the second.
+.LP
+The arguments are
+.TP
+pdb1
+Files in PDB format with coordinates of protein 1.
+.TP
+pdb2
+Files in PDB format with coordinates of protein 2.
+.TP
+classfile
+A file containing a classification. This has probably been made by the
+program \fIautoclass\fR. In our distribution, this file has the name
+"\fBclassfile\fR".
+.TP
+pdbout
+A filename to use for output of the superimposed coordinates.
+.TP
+alg_type
+This can be either \fB0\fR or \fB1\fR where
+.RS
+.TP 
+0
+Needleman and Wunsch and
+.TP
+1
+Smith and Waterman
+.RE
+default: 0
+.TP
+rmsd_threshold
+The threshold used in the fitting procedure described below. For a
+small protein, a value of 3 or 4 Angstrom is a good starting point.
+default: 3.0
+
+.LP
+\fBstruct_pwa\fR will calculate structural alignments of two proteins. The
+code, as Shakespeare said, has been "untimely ripped from its
+mother's womb". There is a larger package (\fBwurst\fR) which is tied
+to a perl interpreter. This is a minimal free standing program.
+.LP
+The alignments are calculated as described in Schenk \fIet al\fR (fill
+this in). The output consists of superimposed coordinates and, in the
+standard output, the corresponding alignmen of sequence. Remember that
+the sequence of the proteins is never used in the alignment.
+.LP
+To make the superposition look prettier, we use a method described in
+the documentation of chimera:
+.RS
+Calculate a first alignment, structural superposition and the
+corresponding root mean square difference (rmsd) of the aligned alpha
+carbons.
+.nf
+while (rmsd > rmsd_thresh)
+    find the pair of atoms with the biggest difference
+    remove this pair from the set of atoms used for superposition
+.fi
+.RE
+.LP
+This does not change the alignment. It just means that the
+superposition is calculated on the more similar parts of the
+structure. Unfortunately, this cannot be turned off. This will be
+changed, but for the moment, you can just give a very large
+\fIrmsd_thresh\fR value if you do not want this.
+
+.SH ALIGNMENT OUTPUt
+
+You will see something like
+.nf
+
+Seq ID 40.5 % (124 / 306) in 337 total including gaps
+    :    4    :    5    :    6    :    7    :    8    :    9
+    :    0    :    0    :    0    :    0    :    0    :    0
+AHLDQFERIKTLGTGSFGRVMLvkhketGNHFAMKILDKQkvvklkQIEHTLNEKRILQA
+VTMNDFDYLKLLGKGTFGKVILvrekatGRYYAMKILRKE------EVAHTVTESRVLQN
+   :    1    :    2    :    3    :    4    :    5    :    6 
+   :    0    :    0    :    0    :    0    :    0    :    0 
+
+    :    1    :    1    :    1    :    1    :    1    :    1
+    :    0    :    1    :    2    :    3    :    4    :    5
+    :    0    :    0    :    0    :    0    :    0    :    0
+VNFPFLVKLEYSFKDNSNLYMVMEYVPGGEMFSHLRRIGRFSEPHARFYAAQIVLTFEYL
+TRHPFLTALKYAFQTHDRLCFVMEYANGGELFFHLSRERVFTEERARFYGAEIVSALEYL
+   :    0    :    0    :    0    :    1    :    1    :    1 
+   :    7    :    8    :    9    :    0    :    1    :    2 
+   :    0    :    0    :    0    :    0    :    0    :    0 
+
+.fi
+This tells you the sequence identity over the aligned residues. The
+numbering refers to the residue numbers in each of the PDB files.
+.LP
+In the example above, reside 70 of the first protein is aligned to
+residue 41 of the second.
+.LP
+Most of the amino acids are in uppercase letters, but starting at
+residue 53 (first protein) there are some lower case letters. That
+means these residues were not used for calculating the structural
+superposition.
+.LP
+Starting at residue 71 in the first protein (41 in the second
+protein), there is a gap in the alignment, marked by the minus (-) signs.
+.SH OPTIONS
+There are no options.
+
+.SH EXIT STATUS
+.sp
+.LP
+The following exit values are returned:
+.sp
+.ne 2
+.mk
+.na
+\fB\fB0\fR\fR
+.ad
+.RS 6n
+.rt  
+Successful completion.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fB>0\fR\fR
+.ad
+.RS 6n
+.rt  
+An error occurred.
+.RE
+
+.SH FILES
+.sp
+.ne 2
+.mk
+.na
+\fB\fBclassfile\fR\fR
+.ad
+.RS 25n
+.rt
+The classification file which should come with this package.
+.RE
+
+.SH BUGS
+.LP
+There is no option for selecting a specific chain from a file, even
+though the pdb_read() function supports it.
+.LP
+One should be able to specify the type of alignment with something
+other than 0 or 1.
+.LP
+The use of \fIrms_thresh\fR should be optional.
+.LP
+You always have to specify the alignment type. It would be far more
+elegant to have a default such as \fIsmith and waterman\fR and an
+option to set it to \fIneedleman and wunsch\fR.
+.LP
+A substantial part of the processing time is spent reading and parsing
+the classification file. We should turn this into C code, so it runs
+faster and the code is not dependent on finding this file.
