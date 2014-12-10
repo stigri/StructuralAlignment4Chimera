@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.base.554501709/LIBRARY_PATH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.base.554501709/LIBRARY_PATH/operation=replace
+environment/project/cdt.managedbuild.toolchain.gnu.base.554501709/LIBRARY_PATH/value=/home/stine/src/StructuralAlignment4Chimera/wurstl/gsl_lib
+environment/project/cdt.managedbuild.toolchain.gnu.base.554501709/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.base.554501709/appendContributed=true
