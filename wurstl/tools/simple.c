@@ -18,27 +18,17 @@
 #include "mprintf.h"
 #include "coord.h"
 #include "coord_i.h"
-#include "read_ac_strct_i.h"
-#include "prob_vec_i.h"
-#include "score_mat_i.h"
-#include "read_seq_i.h"
-#include "score_probvec.h"
 #include "pair_set_i.h"
 #include "pair_set_p_i.h"
 #include "pair_set.h"
-#include "yesno.h"
 #include "pdbin_i.h"
 #include "pdbout_i.h"
 #include "lsqf.h"
-#include "pair_set_sel.h"
+#include "read_seq_i.h"
 #include "score_alnm.h"
-#include "const_clss.h"
-#include "bit_set.h"
+#include "pw_alignment.h"
+#include "pair_set_sel.h"
 
-const float sw1_pgap_open = 3.25;
-const float sw1_pgap_widen = 0.8942;
-const float mat_shift = -0.1;
-const unsigned char mag_num_asrest = 50;
 const int N_AND_W = 0;
 
 
@@ -84,16 +74,14 @@ main (int argc, char *argv[])
     float rmsd_thresh;
 
     struct coord *coord1, *coord2;
-    struct aa_strct_clssfcn *class;
-    struct prob_vec *pvec1, *pvec2;
     struct seq *seq1, *seq2;
-    struct score_mat  *crap = NULL;
-    struct pair_set *set_alg, *set_alg_tmp;
+    struct pair_set *set_alg;
     struct score_struct *scores;
-    struct score_mat  *matrix;
-    float rmsd;
-    char *pbs;
+    float rmsd = 0;
+    struct algnm_param * params;
     int optn;
+    size_t n = 0;
+    char *pbs;
     
     if (argc < 8) {
         usage(argv[0]);
@@ -125,58 +113,28 @@ main (int argc, char *argv[])
     if ((coord2 = pdb_read_with_err(path2)) == NULL)
         return EXIT_FAILURE;
 
-    class = paa_strct_clss6();
-
-    pvec1 = strct_2_prob_vec(coord1, class, YES );
-    pvec2 = strct_2_prob_vec(coord2, class, YES );
-    seq1 = coord_get_seq(coord1);
-    seq2 = coord_get_seq(coord2);
-
-    /* DP Matrix computation  */
-    matrix = score_mat_new(seq_size(seq1), seq_size(seq2));
-    matrix = score_mat_shift(matrix, mat_shift);
-    if (score_pvec(matrix, pvec1, pvec2) == EXIT_FAILURE) {
-       err_printf (argv[0], "Fail to calculat scoring matrix\n");
-       return EXIT_FAILURE; 
-    }
-
+    /*get and set parameters*/
+    params = init_algnm_param();
+    params->alg_type = alg_type;
+    params->rmsd_thresh = rmsd_thresh;
     /*  Alignment computation */
-    set_alg = score_mat_sum_full(&crap, matrix,
-                             sw1_pgap_open, sw1_pgap_widen,
-                             sw1_pgap_open, sw1_pgap_widen,
-                             NULL, NULL, alg_type, NULL);
+    set_alg = pw_algnt(coord1, coord2, params, &rmsd, &n, &pbs);
+    mprintf("simple>> pbs is %s\n", pbs);
 
     /* Alignment evaluation  */
-    scores = get_scores(set_alg, coord1, coord2, sw1_pgap_open, sw1_pgap_widen);
+    scores = get_scores(set_alg, coord1, coord2, params->sw1_pgap_open, params->sw1_pgap_widen);
 
-    /*superimposed residues selection*/
-    pbs = pair_set_sel_geti(set_alg);
-    set_alg_tmp = selected_pair_set_get(set_alg, pbs);
-    if (set_alg_tmp == NULL) {
-    	err_printf(argv[0], "Can not get any selected pairs from alignment.\n");
-    	return EXIT_FAILURE;
-    }
-    do {
-        if (coord_rmsd(set_alg_tmp, coord1, coord2, 0, &rmsd, &coord1, &coord2) == EXIT_SUCCESS) {
-            /*remove max rmsd paar. */
-            pbs = pair_set_sel_delmaxdistance(coord1, coord2, set_alg, pbs);
-            pair_set_destroy(set_alg_tmp);
-            set_alg_tmp = selected_pair_set_get(set_alg, pbs);
-        } else {
-            err_printf(argv[0], "coord_rmsd was not successful. \n");
-            break;
-        }
-    } while ((rmsd > rmsd_thresh) && (set_alg_tmp->n > mag_num_asrest));
-
+    seq1 = coord_get_seq(coord1);
     if (coord_2_pdb(pdbout, coord1, seq1) == EXIT_FAILURE) {
         err_printf (argv[0], "Fail writing coordinates to %s\n", pdbout);
         return EXIT_FAILURE;
     }
     mprintf ("scores evaluation = %f RMSD = %f\n", scores->scr_tot, rmsd);
     mprintf ("%ld pairs took part at the superposition. (uppercase) \n",
-             set_alg_tmp->n);
+             n);
 //     mprintf ("S1: %s \n", seq_print(seq1));
     /*converts characters up-/lowcase (superposited/not) */
+    seq2 = coord_get_seq(coord2);
     pair_set_print_prepare(seq1, seq2, set_alg, pbs);
     if (alg_type == N_AND_W) {
         pair_set_extend(set_alg, seq_size(seq1), seq_size(seq2), EXT_LONG);
@@ -184,18 +142,12 @@ main (int argc, char *argv[])
 
     mprintf ("%s \n", pair_set_pretty_string(set_alg, seq1, seq2, NULL, NULL));
 //     mprintf ("S2: %s \n", seq_print(seq2));
-    bit_set_free(pbs);
-    score_mat_destroy(crap);
+
     pair_set_destroy(set_alg);
     coord_destroy(coord1);
     coord_destroy(coord2);
-    pair_set_destroy(set_alg_tmp);
     free(scores);
-    aa_strct_clssfcn_destroy(class);
-    score_mat_destroy(matrix);
-    prob_vec_destroy(pvec1);
-    prob_vec_destroy(pvec2);
-//     free(pbs);
-
+    bit_set_free(pbs);
+    
     return EXIT_SUCCESS;
 }

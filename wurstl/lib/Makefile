@@ -10,11 +10,12 @@ OUTLIBSTAT=libwurstl.a
 OUTLIBDYN=libwurstl.so
 
 INC = ../inc
-GSL = /local/bondarenko/prg/wurstl/gsl_lib
+GSL = ../gsl_lib
 GSLLIB = gslw
 MODE=static
 
-CFILES = align.c\
+CFILES = aa_strct_clss6.c\
+         align.c\
          amino_a.c\
          bit_set.c\
          binver.c\
@@ -33,6 +34,8 @@ CFILES = align.c\
          pdbin.c\
          pdbout.c\
          prob_vec.c\
+         pw_alignment.c\
+         pwrapper.c\
          read_ac.c\
          read_ac_strct.c\
          read_seq.c\
@@ -42,8 +45,7 @@ CFILES = align.c\
          scratch.c\
          sec_s.c\
          str.c\
-         vec.c\
-         pwrapper.c
+         vec.c
          
 OFILES = $(CFILES:.c=.o)      
 

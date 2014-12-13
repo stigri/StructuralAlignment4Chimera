@@ -27,6 +27,7 @@
 #include "read_ac.h"
 #include "read_ac_i.h"
 #include "read_ac_strct.h"
+#include "const_clss.h"
 #include "read_ac_strct_i.h"
 #include "read_seq_i.h"
 #include "seq.h"
@@ -71,7 +72,10 @@ aa_strct_dump (const struct aa_strct_clssfcn *clssfcn)
 void
 aa_strct_clssfcn_destroy (struct aa_strct_clssfcn * clssfcn)
 {
-    if (!clssfcn)
+    /*not to free the clssfcn if it is a constant structure from i.e aa_strct_clss6.c
+      included from const_clss.h. It is here as perl's garbage collector calls destroy 
+      by itself.*/
+    if (!clssfcn || (clssfcn == paa_strct_clss6()))
         return;
     if (clssfcn->strct)
         clssfcn_destroy (clssfcn->strct);

@@ -1,4 +1,4 @@
-apt-get install python-dev
+apt-get install python-dev on Debian/Ubuntu
 
 to build libraries and tools in static mode, type 
 
@@ -31,11 +31,11 @@ if there is no errors, you can find an executable struct_pwa (structure based pa
 to start a test you can tipe something like this:
 
    cd tools
-   ./struct_pwa ../examples/pdb1jjo_1.ent ../examples/pdb1kct.ent ../examples/classfile ../examples/out.pdb -a 0 -r 10.0
+   ./struct_pwa ../examples/pdb1jjo_1.ent ../examples/pdb1kct.ent ../examples/out.pdb -a 0 -r 10.0
    
    general start string is
 
-   ./struct_pwa <pdb1>  <pdb2>  <classFile>  <pdbout>  -a <alg type> -r <rmsd_threshold>
+   ./struct_pwa <pdb1>  <pdb2>  <pdbout>  -a <alg type> -r <rmsd_threshold>
    
 Description of input parameters:
 

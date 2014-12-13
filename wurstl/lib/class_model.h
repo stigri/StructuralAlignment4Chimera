@@ -5,15 +5,17 @@
 #define CLASS_MODEL_H
 
 /* ---------------- Structures -------------------------------- */
+enum cmodel{
+        SINGLE_NORMAL,   /* gaussian normal distribution                */
+        MULTI_NORMAL,    /* correlated gaussian normal distribution     */
+        UNKNOWN          /* unknown distribution                        */
+    };
+
 struct clssfcn {         /* structure to store a classification         */
     double ***param;     /* parameters for each class in each dimension */
     double **cov_matrix; /* (1-dim) covariance matrix of each class     */
     float *class_weight; /* relative population of each class           */
-    enum {
-        SINGLE_NORMAL,   /* gaussian normal distribution                */
-        MULTI_NORMAL,    /* correlated gaussian normal distribution     */
-        UNKNOWN          /* unknown distribution                        */
-    } **classmodel;      /* which kinds of models are used              */
+    enum cmodel **classmodel;      /* which kinds of models are used              */
     size_t n_class;      /* number of classes                           */
     size_t dim;          /* dimension of feature space (input-vector)   */
     float abs_error;     /* absolut error in (input) measurement        */

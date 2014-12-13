@@ -1,3 +1,4 @@
 *.o
 *.so*
 tools/struct_pwa
+tools/struct_pwa_simple

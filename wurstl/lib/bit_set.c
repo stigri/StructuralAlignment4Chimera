@@ -30,7 +30,7 @@ void
 bit_set_free(char* bs) {
 
     free_if_not_null(bs);
-    bs = 0;
+
 }
 
 void bit_set_bitset(char* bs, size_t pos) {
