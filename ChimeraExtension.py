@@ -39,7 +39,8 @@ class BackgroundTask:
 	def __init__(self, func):
 		self.checkCount = 0
 		self.task = tasks.Task("Structural Alignment", self.cancelCB, self.statusCB)
-		self.execute(func,)
+		from thread import start_new_thread
+		start_new_thread(self.execute,(func,))
 
 	def cancelCB(self):
 		self.finished()
