@@ -1,4 +1,5 @@
 import chimera.extension
+from chimera import tasks
 
 class SA4CEMO(chimera.extension.EMO):
 	# This class is derived from chimera.extension.EMO
@@ -32,7 +33,24 @@ class SA4CEMO(chimera.extension.EMO):
 	# locates modules in the extension package by name; if no name
 	# is supplied, the "__init__.py" module is returned.
 	def activate(self):
-		self.module("startupScript")
+		BackgroundTask(self.module("startupScript").startup)
+
+class BackgroundTask:
+	def __init__(self, func):
+		self.checkCount = 0
+		self.task = tasks.Task("Structural Alignment", self.cancelCB, self.statusCB)
+		self.execute(func,)
+
+	def cancelCB(self):
+		self.finished()
+
+	def statusCB(self):
+		self.checkCount += 1
+		self.task.updateStatus("count=%d" % self.checkCount)
+
+	def execute(self, func):
+		func()
+		self.task.finished()
 
 # Register an instance of 'PscViewEMO' with the Chimera extension manager
 chimera.extension.manager.registerExtension(SA4CEMO(__file__))
