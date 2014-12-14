@@ -9,7 +9,7 @@ def startup():
 
     model = []
 
-    # Loop over all atoms of all open models and print the atom's coordinates
+    # Loop over all atoms of all open models
     for p in models:
 	model.append(p.name)
 
@@ -32,7 +32,33 @@ def startup():
 
 	model.append(atoms)
 
-    print wurstl.structural_alignment(model)
+    # wurstl returns a list of pairs. Each pair has the indices
+    # of an atom in the first model aligned to an atom in the
+    # second model. alignments is therefore a mapping between
+    # atoms in both models. Note that we expect to only receive
+    # alignments for two models even though that the loop above
+    # might iterate over more models. However, wurstl as of
+    # today cannot align more than two models.
+    alignments = wurstl.structural_alignment(model)
+
+    # mobileAtoms and referenceAtoms are logically mapped lists
+    # of aligned atoms.
+    mobileAtoms = []
+    referenceAtoms = []
+    for alignment in alignments:
+	mobileAtoms.append(models[0].atoms[alignment[0]])
+	referenceAtoms.append(models[1].atoms[alignment[1]])
+
+    # Use Midas' match command to visually align
+    # both models.
+    # see https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/match.html
+    from Midas import match, TooFewAtomsError
+    try:
+	match(mobileAtoms, referenceAtoms, None)
+    except TooFewAtomsError:
+	from chimera import replyobj
+	replyobj.error('Too few corresponding atoms (<4) to '
+		'match both models\n')
 
 # If startup is immediately executed, it will miss the models that are being
 # opened (Its likelyhood is significantly higher in commandline mode, which
