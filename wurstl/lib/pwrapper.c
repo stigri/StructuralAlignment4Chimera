@@ -45,8 +45,8 @@ static struct allatoms get_all_atoms(PyObject* obj)
     		//ID Atom Type not used right now!!!
     		//idam_type = PyString_AsString(PyList_GET_ITEM(item,1));
     		strncpy(atom.res_name, PyString_AsString(PyList_GET_ITEM(item,2)), 4);
-    		atom.icode = (char) PyString_AsString(PyList_GET_ITEM(item,3));
-    		atom.chain_id = PyString_AsString(PyList_GET_ITEM(item,4));
+    		atom.icode = PyString_AsString(PyList_GET_ITEM(item,3))[0];
+    		atom.chain_id = PyString_AsString(PyList_GET_ITEM(item,4))[0];
     		atom.res_num = (int) PyInt_AsLong(PyList_GET_ITEM(item,5)); // Correct mapping?
     		atom.x = PyFloat_AsDouble(PyList_GET_ITEM(item,6));
     		atom.y = PyFloat_AsDouble(PyList_GET_ITEM(item,7));
@@ -113,6 +113,18 @@ static PyObject* structural_alignment(PyObject* self, PyObject* args)
     cB = atoms2mdl(allatomsB);
     cB->compnd = compndB;
 
+    /*
+     * At this point all python objects have been copied to local
+     * variables. Thus, we can release Python's global interpreter lock (GIL)
+     * to allow the calling Chimera extension to do its stuff (e.g. painting the UI).
+     *
+     * Also note the Py_END_ALLOW_THREADS macro below. It means we will re-acquire
+     * GIL.
+     *
+     * see https://docs.python.org/2/c-api/init.html#releasing-the-gil-from-extension-code
+     */
+    Py_BEGIN_ALLOW_THREADS;
+
     /*get and set parameters*/
     params = init_algnm_param();
     params->alg_type = 1; /* default smith waterman */
@@ -140,6 +152,8 @@ static PyObject* structural_alignment(PyObject* self, PyObject* args)
 
    	/* Destroy the pair_set after it has been converted to the result */
    	pair_set_destroy(set_alg);
+
+   	Py_END_ALLOW_THREADS;
 
    	return result;
 }
