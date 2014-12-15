@@ -1,9 +1,15 @@
 import chimera
 import wurstl
+from chimera import replyobj
 
 def startup():
     # Store all currently open Chimera models in the variable called "models"
     models = chimera.openModels.list()
+
+    # Need at least to models to work with (technically we need exactly two).
+    if len(models) < 2:
+	replyobj.error("Cannot create alignment out of less than two models.")
+	return
 
     # Loop over all atoms of all open models and convert Chimera's
     # data model into a user-type (model, atom, residue) independent
@@ -73,6 +79,5 @@ def startup():
     try:
 	match(mobileAtoms, referenceAtoms, None)
     except TooFewAtomsError:
-	from chimera import replyobj
 	replyobj.error('Too few corresponding atoms (<4) to '
 		'match both models\n')
