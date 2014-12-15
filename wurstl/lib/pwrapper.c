@@ -34,6 +34,8 @@ static struct allatoms get_all_atoms(PyObject* obj)
 	allatoms.atoms = atoms;
 	allatoms.n = len;
 
+	/* http://www.wwpdb.org/documentation/format33/sect9.html#ATOM */
+
 	for (i = 0; i < len; i++) {
     	item = (PyObject*) PyList_GET_ITEM(seq, i);
     	if ((long)PyList_Size(item) == 9) {
@@ -158,7 +160,12 @@ static PyObject* structural_alignment(PyObject* self, PyObject* args)
    	return result;
 }
 
-
+/*
+ * see https://docs.python.org/2/extending/extending.html#writing-extensions-in-c
+ * see https://docs.python.org/2/c-api/arg.html
+ * see https://docs.python.org/2/c-api/concrete.html
+ * see http://www.tutorialspoint.com/python/python_further_extensions.htm
+ */
 static char structural_alignment_docs[] =
     "structural_alignment( ): Any message you want to put here!!\n";
 
