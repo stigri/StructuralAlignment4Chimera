@@ -25,6 +25,7 @@ class SA4CEMO(chimera.extension.EMO):
 	# Return the name of a file containing an icon that may be used
 	# on the tool bar to provide a shortcut for launching the extension.
 	def icon(self):
+		# TODO need a tiff
 		return self.path("SA4C.tiff")
 	
 	# Invoke the extension.  Note that when this method is called,
