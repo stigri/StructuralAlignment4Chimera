@@ -1,3 +1,4 @@
+# This script only has relevance when passed to Chimera with "--script startupScript.py"
 from __init__ import startup
 from chimera.tkgui import app
 
