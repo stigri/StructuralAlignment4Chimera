@@ -33,23 +33,30 @@ class SA4CEMO(chimera.extension.EMO):
 	# locates modules in the extension package by name; if no name
 	# is supplied, the "__init__.py" module is returned.
 	def activate(self):
-		BackgroundTask(self.module("startupScript").startup)
+		BackgroundTask(self.module("__init__").startup)
 
 class BackgroundTask:
 	def __init__(self, func):
 		self.checkCount = 0
 		self.task = tasks.Task("Structural Alignment", self.cancelCB, self.statusCB)
+		# Execute func in a thread different from the main (eventloop) thread
+		# to prevent func from freezing the UI (which is re-drawn by the eventloop).
 		from thread import start_new_thread
 		start_new_thread(self.execute,(func,))
 
 	def cancelCB(self):
+		# TODO cancellation doesn't work yet
 		self.finished()
 
 	def statusCB(self):
+		# TODO Provide status beyond an incrementing counter
 		self.checkCount += 1
 		self.task.updateStatus("count=%d" % self.checkCount)
 
 	def execute(self, func):
+		# This method executes in its own thread. Once
+		# func returns, we signal completion to the 
+		# BackgroundTask.
 		func()
 		self.task.finished()
 
