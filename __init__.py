@@ -69,8 +69,11 @@ def startup():
     mobileAtoms = []
     referenceAtoms = []
     for alignment in alignments:
-	mobileAtoms.append(models[0].atoms[alignment[0]])
-	referenceAtoms.append(models[1].atoms[alignment[1]])
+		idxA = models[0].atoms[alignment[0]]
+		idxB = models[1].atoms[alignment[1]]
+		if idxA != -1 and idxB != -1:
+			mobileAtoms.append(idxA)
+			referenceAtoms.append(idxB)
 
     # Use Midas' match command to visually align
     # both models.
