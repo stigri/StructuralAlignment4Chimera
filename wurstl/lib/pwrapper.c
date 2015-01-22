@@ -89,6 +89,9 @@ static PyObject* structural_alignment(PyObject* self, PyObject* args)
     char* compndB;
     PyObject* atomsB;
 
+	/* Immediately flush stdout (helpful during debugging) */
+    //setbuf(stdout, NULL);
+
     /* convert python parameter types into C counterparts */
 	if (!PyArg_ParseTuple(args, "O", &obj)) {
 		return NULL;
@@ -130,13 +133,22 @@ static PyObject* structural_alignment(PyObject* self, PyObject* args)
     /*get and set parameters*/
     params = init_algnm_param();
     params->alg_type = 1; /* default smith waterman */
-    params->rmsd_thresh = 3; /* default 3 Angstrom     */
+    params->rmsd_thresh = 3; /* default 3 Angstrom */
 
     /*
      * Here's where the beef is.
      * (we ignore rmsd, n and pbs)
      */
     set_alg = pw_algnt(cA, cB, params, &rmsd, &n, &pbs);
+
+    /*
+     * Free stuff that has been allocated by *us* earlier on.
+     */
+    free(allatomsA.atoms);
+    free(allatomsB.atoms);
+
+    Py_DECREF(atomsA);
+    Py_DECREF(atomsB);
 
     /*
      * Convert wurstl structs to python-consumable data.
